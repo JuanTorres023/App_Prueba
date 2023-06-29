@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">My ApplicationPrubaP</string>
+
+    <string name="Et_idioma_origen">Ingrese texto</string>
+    <string name="Tv_Idioma_Destino">Traducción</string>
+    <string name="Btn_elegir_idioma">Español</string>
+    <string name="Btn_Idioma_Elegido">Inglés</string>
+    <string name="Btn_Traducir">Traducir</string>
 </resources>
