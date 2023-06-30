@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Idioma> IdiomasArrayList;
 
+    private String codigo_idioma_origen = "es";
+    private String titulo_idioma_origen ="Español";
+
     private static final String REGISTROS = "Mis registros";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Elegir idioma", Toast.LENGTH_SHORT).show();
+                Elegiridiomaorigen();
             }
         });
 
@@ -53,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         Btn_Traducir.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Traducir", Toast.LENGTH_SHORT).show();
             }
         });
@@ -82,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         for(String codigo_lenguaje : ListaCodigoIdioma){
             String titulo_lenguaje = new Locale(codigo_lenguaje).getDisplayLanguage();
 
-            Log.d(REGISTROS, "iIdiomasDisponibles: codigo_lenguaje: " + codigo_lenguaje);
-            Log.d(REGISTROS, "iIdiomasDisponibles: titulo_lenguaje: " + titulo_lenguaje);
+            // Log.d(REGISTROS, "iIdiomasDisponibles: codigo_lenguaje: " + codigo_lenguaje);
+            // Log.d(REGISTROS, "iIdiomasDisponibles: titulo_lenguaje: " + titulo_lenguaje);
 
             Idioma modelIdioma = new Idioma(codigo_lenguaje,titulo_lenguaje);
             IdiomasArrayList.add(modelIdioma);
@@ -91,7 +98,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void Elegiridiomaorigen(){
+        PopupMenu popupMenu = new PopupMenu(this, Btn_elegir_idioma);
+        for(int i=0; i<IdiomasArrayList.size(); i++){
+            popupMenu.getMenu().add(Menu.NONE, i, i, IdiomasArrayList.get(i).getTitulo_idioma());
+        }
+
+        popupMenu.show();
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                int position = item.getItemId();
+
+                codigo_idioma_origen = IdiomasArrayList.get(position).getCodigo_idioma();
+                titulo_idioma_origen = IdiomasArrayList.get(position).getTitulo_idioma();
+
+                Btn_elegir_idioma.setText(titulo_idioma_origen);
+                Et_Idioma_Origen.setHint("Ingrese texto en: "+titulo_idioma_origen);
 
 
+                Log.d(REGISTROS, "onMenuItemClick: codigo_idioma_origen: " + codigo_idioma_origen);
+                Log.d(REGISTROS, "onMenuItemClick: titulo_idioma_origen: " + titulo_idioma_origen);
+
+                return false;
+            }
+        });
+    }
 
 }
