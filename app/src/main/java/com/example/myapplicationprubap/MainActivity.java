@@ -1,7 +1,9 @@
 package com.example.myapplicationprubap;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplicationprubap.Modelo.Idioma;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.mlkit.common.model.DownloadConditions;
 import com.google.mlkit.nl.translate.TranslateLanguage;
+import com.google.mlkit.nl.translate.TranslatorOptions;
 
 import org.w3c.dom.Text;
 
@@ -29,10 +35,17 @@ public class MainActivity extends AppCompatActivity {
     TextView Tv_Idioma_Destino;
     MaterialButton Btn_elegir_idioma, Btn_Idioma_Elegido, Btn_Traducir;
 
+    private ProgressDialog progressDialog;
     private ArrayList<Idioma> IdiomasArrayList;
 
     private String codigo_idioma_origen = "es";
     private String titulo_idioma_origen ="Español";
+
+    private String codigo_idioma_destino = "en";
+    private String titulo_idioma_destino ="English";
+    private TranslatorOptions translatorOptions;
+    private Translator translator;
+    private String Texto_idioma_Origen = "";
 
     private static final String REGISTROS = "Mis registros";
     @Override
@@ -46,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         Btn_elegir_idioma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Elegir idioma", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Elegir idioma", Toast.LENGTH_SHORT).show();
                 Elegiridiomaorigen();
             }
         });
@@ -54,14 +67,16 @@ public class MainActivity extends AppCompatActivity {
         Btn_Idioma_Elegido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Idioma elegido", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Idioma elegido", Toast.LENGTH_SHORT).show();
+                Elegiridiomadestino();
             }
         });
 
         Btn_Traducir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Traducir", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Traducir", Toast.LENGTH_SHORT).show();
+                ValidarDatos();
             }
         });
 
@@ -79,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
         Btn_elegir_idioma = findViewById(R.id.Btn_elegir_idioma);
         Btn_Idioma_Elegido = findViewById(R.id.Btn_Idioma_Elegido);
         Btn_Traducir = findViewById(R.id.Btn_Traducir);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Cargando...");
+        progressDialog.setCanceledOnTouchOutside(false);
     }
 
 
@@ -126,5 +145,81 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void Elegiridiomadestino() {
+        PopupMenu popupMenu = new PopupMenu(this, Btn_Idioma_Elegido);
+        for (int i = 0; i < IdiomasArrayList.size(); i++) {
+            popupMenu.getMenu().add(Menu.NONE, i, i, IdiomasArrayList.get(i).getTitulo_idioma());
+        }
+
+        popupMenu.show();
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                int position = item.getItemId();
+
+                codigo_idioma_destino = IdiomasArrayList.get(position).getCodigo_idioma();
+                titulo_idioma_destino = IdiomasArrayList.get(position).getTitulo_idioma();
+
+                Btn_Idioma_Elegido.setText(titulo_idioma_destino);
+                Et_Idioma_Origen.setHint("Ingrese texto en: " + titulo_idioma_destino);
+
+
+                Log.d(REGISTROS, "onMenuItemClick: codigo_idioma_origen: " + codigo_idioma_destino);
+                Log.d(REGISTROS, "onMenuItemClick: titulo_idioma_origen: " + titulo_idioma_destino);
+
+                return false;
+            }
+        });
+    }
+
+    private void ValidarDatos(){
+        Texto_idioma_Origen = Et_Idioma_Origen.getText().toString().trim();
+        Log.d(REGISTROS, "ValidarDatos: Texto_idioma_origen "+ Texto_idioma_Origen);
+
+        if(Texto_idioma_Origen.isEmpty()){
+            Toast.makeText(this, "Ingrese texto en: ", Toast.LENGTH_SHORT).show();
+        }else {
+            TraducirTexto();
+        }
+    }
+
+    private void TraducirTexto() {
+       /* progressDialog.setMessage("Procesando..."  );
+        progressDialog.show();
+
+        translatorOptions = new TranslatorOptions.Builder()
+                .setSourceLanguage(codigo_idioma_origen)
+                .setTargetLanguage(codigo_idioma_destino)
+                .build();
+
+
+        translator = Translator.getClient(translatorOptions);
+
+        DownloadConditions downloadConditions = new DownloadConditions.Builder()
+                .requireWifi()
+                .build();
+
+        translator.downloadModelIfNeeded(downloadConditions)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                 @Override
+                    public void onSuccess(Void aVoid) {
+                        progressDialog.dismiss();
+                        //Toast.makeText(MainActivity.this, "Texto traducido", Toast.LENGTH_SHORT).show();
+                     Log.d(REGISTROS, "Eñ áqiete dre ");
+                    }
+                }).addOnFailureListener(new OnFailureListener(){
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Log.d(REGISTROS, "onFailure"+e);
+                        Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+
+    }*/
 
 }
